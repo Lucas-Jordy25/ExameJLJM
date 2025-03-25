@@ -1,5 +1,6 @@
 package com.example.examejljm;
 
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.exameJLJM.R;
 
@@ -20,7 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
-public class ArticlesActivity extends AppCompatActivity implements ArticleAdapter.OnArticleClickListener {
+public class ArticlesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerArticles;
     private ArticleAdapter articleAdapter;
@@ -37,7 +38,7 @@ public class ArticlesActivity extends AppCompatActivity implements ArticleAdapte
         recyclerArticles.setLayoutManager(new LinearLayoutManager(this));
 
         articuloList = new ArrayList<>();
-        articleAdapter = new ArticleAdapter(this, articuloList, this);
+        articleAdapter = new ArticleAdapter(articuloList, this);
         recyclerArticles.setAdapter(articleAdapter);
 
         issueId = getIntent().getStringExtra("issue_id");
@@ -49,20 +50,18 @@ public class ArticlesActivity extends AppCompatActivity implements ArticleAdapte
     private void obtenerArticulos(String issueId) {
         String url = "https://revistas.uteq.edu.ec/ws/pubs.php?i_id=" + issueId;
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         try {
-                            JSONArray articlesArray = response.getJSONArray("articles");
-
-                            for (int i = 0; i < articlesArray.length(); i++) {
-                                JSONObject articleJson = articlesArray.getJSONObject(i);
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject articleJson = response.getJSONObject(i);
 
                                 String title = articleJson.getString("title");
                                 String doi = articleJson.getString("doi");
 
-                                articuloList.add(new Articulo(title,doi));
+                                articuloList.add(new Articulo(title, doi));
                             }
                             articleAdapter.notifyDataSetChanged();
 
@@ -78,11 +77,5 @@ public class ArticlesActivity extends AppCompatActivity implements ArticleAdapte
         });
 
         requestQueue.add(request);
-    }
-
-    @Override
-    public void onArticleClick(String doi) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(doi));
-        startActivity(intent);
     }
 }
