@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="16dp">
+
+        <TextView
+            android:id="@+id/txttitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:scaleType="centerCrop"
+            android:text="Titulo"/>
+        <TextView
+            android:id="@+id/txtfecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:scaleType="centerCrop"
+            android:text="Publicacion"/>
+
+        <TextView
+            android:id="@+id/txtVolume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:scaleType="centerCrop"
+            android:text="Volumen"/>
+
+        <TextView
+            android:id="@+id/txtYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:scaleType="centerCrop"
+            android:text="Año"/>
+
+        <ImageView
+            android:id="@+id/imgPortada"
+            android:layout_width="140dp"
+            android:layout_height="200dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_launcher_foreground" />
+    </LinearLayout>
+</LinearLayout>

@@ -14,18 +14,20 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityIssue extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private RevistaAdapter journalAdapter;
+    private AdapterIssue issueAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.example.exameJLJM.R.layout.activity_main);
+        setContentView(com.example.exameJLJM.R.layout.activityissue);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        int journalId = getIntent().getIntExtra("journal_id", 1);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://revistas.uteq.edu.ec/ws/")
@@ -33,21 +35,21 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         ServiceA apiService = retrofit.create(ServiceA.class);
-        apiService.getJournals().enqueue(new Callback<List<Revista>>() {
+        apiService.getIssues(journalId).enqueue(new Callback<List<Issue>>() {
             @Override
-            public void onResponse(Call<List<Revista>> call, Response<List<Revista>> response) {
+            public void onResponse(Call<List<Issue>> call, Response<List<Issue>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    journalAdapter = new RevistaAdapter(MainActivity.this, response.body(), journal -> {
-                        Intent intent = new Intent(MainActivity.this, ActivityIssue.class);
-                        intent.putExtra("journal_id", journal.journal_id);
+                    issueAdapter = new AdapterIssue(ActivityIssue.this, response.body(), issue -> {
+                        Intent intent = new Intent(ActivityIssue.this, ArticleActivity.class);
+                        intent.putExtra("issue_id", issue.issue_id);
                         startActivity(intent);
                     });
-                    recyclerView.setAdapter(journalAdapter);
+                    recyclerView.setAdapter(issueAdapter);
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Revista>> call, Throwable t) {
+            public void onFailure(Call<List<Issue>> call, Throwable t) {
                 t.printStackTrace();
             }
         });

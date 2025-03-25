@@ -1,6 +1,6 @@
 package com.example.examejljm;
-
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,44 +15,60 @@ import com.example.exameJLJM.R;
 
 import java.util.List;
 
-public class RevistaAdapter extends RecyclerView.Adapter<RevistaAdapter.RevistaViewHolder> {
+public class RevistaAdapter extends RecyclerView.Adapter<RevistaAdapter.ViewHolder> {
 
-    private List<Revista> revistaList;
     private Context context;
+    private List<Revista> journalList;
+    private OnItemClickListener listener;
 
-    public RevistaAdapter(List<Revista> revistaList, Context context) {
-        this.revistaList = revistaList;
+    public interface OnItemClickListener {
+        void onItemClick(Revista journal);
+    }
+
+    public RevistaAdapter(Context context, List<Revista> journalList, OnItemClickListener listener) {
         this.context = context;
+        this.journalList = journalList;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
-    public RevistaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_revista, parent, false);
-        return new RevistaViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.itemrevista, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RevistaViewHolder holder, int position) {
-        Revista revista = revistaList.get(position);
-        holder.textViewTitulo.setText(revista.getTitulo());
-        Glide.with(context).load(revista.getPortada()).into(holder.imageViewPortada);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Revista journal = journalList.get(position);
+        holder.txtName.setText(journal.name);
+
+        // Aplicamos Html.fromHtml() para mostrar la descripción con formato
+        holder.txtDescription.setText(Html.fromHtml(journal.description, Html.FROM_HTML_MODE_LEGACY));
+
+        Glide.with(context)
+                .load(journal.portada)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .error(R.drawable.ic_launcher_background)
+                .into(holder.imgCover);
+
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(journal));
     }
 
     @Override
     public int getItemCount() {
-        return revistaList.size();
+        return journalList.size();
     }
 
-    public static class RevistaViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imgCover;
+        TextView txtName, txtDescription;
 
-        ImageView imageViewPortada;
-        TextView textViewTitulo;
-
-        public RevistaViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageViewPortada = itemView.findViewById(com.example.exameJLJM.R.id.imgPortada);
-            textViewTitulo = itemView.findViewById(R.id.tvTituloRevista);
+            imgCover = itemView.findViewById(com.example.exameJLJM.R.id.imgCover);
+            txtName = itemView.findViewById(R.id.txtName);
+            txtDescription = itemView.findViewById(R.id.txtDescription);
         }
     }
 }
