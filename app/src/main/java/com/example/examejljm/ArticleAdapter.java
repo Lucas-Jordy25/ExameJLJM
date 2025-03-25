@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.exameJLJM.R;
 import java.util.List;
 
@@ -37,27 +39,26 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         holder.txtTitle.setText(article.title);
         holder.txtAuthors.setText(article.getAuthorsString());
 
-        // Botón para abrir el PDF
         holder.btnOpenPdf.setOnClickListener(v -> {
             String pdfUrl = article.getPdfUrl();
-            if (pdfUrl != null) {
+            if (pdfUrl != null && !pdfUrl.isEmpty()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl));
                 context.startActivity(intent);
             }
         });
 
-        // Botón para descargar el PDF
-        holder.btnDownloadPdf.setOnClickListener(v -> {
-            String pdfUrl = article.getPdfUrl();
-            if (pdfUrl != null) {
-                downloadPdf(pdfUrl);
+        holder.btnOpenHtml.setOnClickListener(v -> {
+            if (article.doi != null && !article.doi.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.doi));
+                context.startActivity(intent);
             }
         });
 
-        // Botón para abrir en HTML con el DOI
-        holder.btnOpenHtml.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.doi));
-            context.startActivity(intent);
+        holder.btnDownloadPdf.setOnClickListener(v -> {
+            String pdfUrl = article.getPdfUrl();
+            if (pdfUrl != null && !pdfUrl.isEmpty()) {
+                startPdfDownload(pdfUrl, article.title);
+            }
         });
     }
 
@@ -68,25 +69,24 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
 
     public static class ArticleViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtAuthors;
-        Button btnOpenPdf, btnDownloadPdf, btnOpenHtml;
+        Button btnOpenPdf, btnOpenHtml, btnDownloadPdf;
 
         public ArticleViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtTitle = itemView.findViewById(com.example.exameJLJM.R.id.txtTitle);
+            txtTitle = itemView.findViewById(R.id.txtTitle);
             txtAuthors = itemView.findViewById(R.id.txtAuthors);
             btnOpenPdf = itemView.findViewById(R.id.btnOpenPdf);
-            btnDownloadPdf = itemView.findViewById(R.id.btnDownloadPdf);
             btnOpenHtml = itemView.findViewById(R.id.btnOpenHtml);
+            btnDownloadPdf = itemView.findViewById(R.id.btnDownloadPdf);
         }
     }
 
-    // Método para descargar el PDF
-    private void downloadPdf(String url) {
+    private void startPdfDownload(String url, String fileName) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setTitle("Descargando PDF");
-        request.setDescription("Descargando artículo...");
+        request.setTitle("Descargando: " + fileName);
+        request.setDescription("Descargando PDF...");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "articulo.pdf");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName.replaceAll(" ", "_") + ".pdf");
 
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         if (downloadManager != null) {

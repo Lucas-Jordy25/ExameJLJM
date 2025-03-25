@@ -15,16 +15,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ArticleDetailActivity"
+            android:name="com.example.examejljm.ArticleActivity"
             android:exported="false" />
         <activity
-            android:name=".ArticleActivity"
+            android:name="com.example.examejljm.ArticledetailA"
             android:exported="false" />
         <activity
-            android:name=".IssueActivity"
+            android:name="com.example.examejljm.ActivityIssue"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.examejljm.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
